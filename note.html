@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Maker</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+
+        #main {
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 50px;
+            background-color: bisque;
+            display: flex;
+            flex-wrap: wrap;
+
+        }
+
+        #addbtn {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border: 0;
+            outline: 0;
+            font-size: 15px;
+            border-radius: 7px;
+        }
+
+        .note {
+            height: 400px;
+            width: 400px;
+            background-color: white;
+            margin: 15px;
+            margin-top: 45px;
+
+
+        }
+
+        .toolbar {
+            width: 100%;
+            background-color: blueviolet;
+            padding: 5px;
+            color: white;
+            display: flex;
+            justify-content: end;
+
+        }
+
+        .toolbar i {
+            padding: 7px;
+            cursor: pointer;
+
+        }
+
+        .note textarea {
+            border: none;
+            height: 100%;
+            width: 100%;
+            resize: none;
+            padding: 10px;
+            font-size: 20px;
+
+        }
+
+        .note textarea:focus {
+            outline: 0;
+
+        }
+    </style>
+
+</head>
+
+<body>
+    <button id="addbtn">
+        <i class="fas fa-plus"></i>
+        Add New Note</button>
+
+    <div id="main">
+
+        <!-- <div class="note">
+            <div class="toolbar">
+                <i class="fas fa-save"></i>
+                <i class="fas fa-trash"></i>
+            </div>
+            <textarea></textarea>
+
+        </div> -->
+    </div>
+
+</body>
+
+
+<script src="https://kit.fontawesome.com/bf520e6492.js" crossorigin="anonymous"></script>
+<script>
+
+    const main = document.querySelector('#main')
+
+    const addbtn = document.querySelector('#addbtn')
+
+    const saveNote = () => {
+        const notes = document.querySelectorAll('.note textarea');
+        console.log(notes)
+        const data = [];
+        notes.forEach(
+            (note) => {
+                data.push(note.value)
+            }
+        )
+        if (data.length === 0) {
+            localStorage.removeItem('notes')
+        } else {
+            localStorage.setItem('notes', JSON.stringify(data))
+
+        }
+
+    }
+
+    addbtn.addEventListener('click', function () {
+        addnote()
+    })
+
+    const addnote = (text = '') => {
+        const note = document.createElement('div');
+        note.classList.add('note')
+        note.innerHTML = `
+    <div class="toolbar">
+                <i class="save fas fa-save"></i>
+                <i class="trash fas fa-trash"></i>
+            </div>
+            <textarea>${text}</textarea>
+    `;
+
+        note.querySelector('.save').addEventListener('click',
+            function () {
+                saveNote()
+            })
+
+        note.querySelector('.trash').addEventListener('click',
+            function () {
+                note.remove()
+                saveNote();
+            })
+
+        note.querySelector('textarea').addEventListener(
+            "focusout",
+            function () {
+                saveNote();
+            }
+        )
+
+        // focusout :user writes and left so no need to save,autosave
+        main.appendChild(note);
+        saveNote();
+
+    }
+    (
+        function () {
+            const lsnotes = JSON.parse(localStorage.getItem('notes'));
+            if (lsnotes === null) {
+                addnote()
+            } else {
+                lsnotes.forEach(
+                    (isNote) => {
+                        addnote(isNote)
+                    }
+                )
+            }
+
+            if (lsnotes.length == 0) {
+                localStorage.removeItem('notes')
+            } else {
+                addnote();
+            }
+
+        }
+    )()
+
+
+</script>
+
+</html>
